@@ -8,6 +8,7 @@
 
 import Foundation
 import UIKit
+import FirebaseDatabase
 
 struct availRecipe {
     var uid: String
@@ -15,22 +16,16 @@ struct availRecipe {
     var image: UIImage
     var ingredients: [String]
     var url: String
+    var image_url: String
 }
-
-//struct availRecipe {
-//    var name: String
-//    var image: UIImage
-//}
 
 class Recipes: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
-    //@IBOutlet weak var recipeAvailableList: UITableView!
     @IBOutlet weak var recipeList: UITableView!
     
-    //var available_recipes = [availRecipe(name: "pancakes", image: #imageLiteral(resourceName: "pancakes")), availRecipe(name: "hamburgers", image: #imageLiteral(resourceName: "hamburger")), availRecipe(name: "spagetti", image: #imageLiteral(resourceName: "spagetti")), availRecipe(name: "fruit Salad", image: #imageLiteral(resourceName: "rice")), availRecipe(name: "cookies", image: #imageLiteral(resourceName: "cookie"))]
-    
-    
     var available_recipes = [availRecipe]()
+    
+    var clicked_recipe = availRecipe(uid: "", title: "", image: #imageLiteral(resourceName: "baseline_close_black_36pt"), ingredients: [""], url: "", image_url: "")
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -38,19 +33,8 @@ class Recipes: UIViewController, UITableViewDelegate, UITableViewDataSource {
         recipeList.delegate = self
         recipeList.dataSource = self
         
-        
-        //https://us-central1-primary-server-168620.cloudfunctions.net/recipe-categories
-        
-//        if let filePath = Bundle.main.path(forResource: "imageName", ofType: "jpg"), let image = UIImage(contentsOfFile: filePath) {
-//            //imageView.contentMode = .scaleAspectFit
-//            //imageView.image = image
-//        }
-        
-        
         print("reloading data")
         self.recipeList.reloadData()
-        
-        
     }
     
     @IBAction func filter(_ sender: Any) {
@@ -104,7 +88,7 @@ class Recipes: UIViewController, UITableViewDelegate, UITableViewDataSource {
         
         let sv = UIViewController.displaySpinner(onView: self.view)
         
-        let url = URL(string: "https://us-central1-primary-server-168620.cloudfunctions.net/recipes-by-category?category=Indian")
+        let url = URL(string: "https://us-central1-primary-server-168620.cloudfunctions.net/recipes-by-category?category=Mexican")
         if let usableUrl = url {
             let request = URLRequest(url: usableUrl)
             let task = URLSession.shared.dataTask(with: request, completionHandler: { (data, response, error) in
@@ -129,8 +113,9 @@ class Recipes: UIViewController, UITableViewDelegate, UITableViewDataSource {
                                             let rUrl = recipe["url"] as! String
                                             let rIngredients = recipe["ingredients"] as! NSArray
                                             let rImage = UIImage(url: URL(string: recipe["image"] as! String))
+                                            let rImageUrl = recipe["image"] as! String
                                             
-                                            self.available_recipes.append(availRecipe(uid: rUid, title: rTitle, image: rImage!, ingredients: rIngredients as! [String], url: rUrl))
+                                            self.available_recipes.append(availRecipe(uid: rUid, title: rTitle, image: rImage!, ingredients: rIngredients as! [String], url: rUrl, image_url: rImageUrl))
                                             
                                             //print("recipeList: \(self.available_recipes)")
                                             
@@ -142,7 +127,7 @@ class Recipes: UIViewController, UITableViewDelegate, UITableViewDataSource {
                                             UIViewController.removeSpinner(spinner: sv)
                                             self.recipeList.reloadData()
                                         }
-                                        self.recipeList.reloadData()
+                                        //self.recipeList.reloadData()
                                     }
                                 }
                             } catch let error as NSError {
@@ -162,7 +147,27 @@ class Recipes: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
     }
     
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if let vc = segue.destination as? RecipeDetail {
+            vc.rurl = self.clicked_recipe.url
+            vc.rtitle = self.clicked_recipe.title
+            vc.rimage = self.clicked_recipe.image
+            vc.ringredients = self.clicked_recipe.ingredients
+            vc.ruid = self.clicked_recipe.uid
+            vc.rimage_url = self.clicked_recipe.image_url
+        }
+    }
     
+    func tableView(_ tableView: UITableView, didHighlightRowAt indexPath: IndexPath) {
+        print("selected: \(self.available_recipes[indexPath.row])")
+        
+        self.clicked_recipe = self.available_recipes[indexPath.row] as! availRecipe
+        
+        self.performSegue(withIdentifier: "show_detail", sender: self)
+    }
+
+
+
 }
 
 extension UIImage {

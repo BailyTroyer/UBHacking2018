@@ -33,12 +33,6 @@ class SignIn: UIViewController {
         warningLabel.bindToKeyboard()
     }
     
-    //    override func viewWillAppear(_ animated: Bool) {
-    //        loginButton.bindToKeyboard()
-    //        buttonsView.bindToKeyboard()
-    //        self.emailAddress.becomeFirstResponder()
-    //    }
-    
     func setupKeyboardDismissRecognizer() {
         let tapRecognizer: UITapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(self.dismissKeyboard))
         self.view.addGestureRecognizer(tapRecognizer)
@@ -49,9 +43,8 @@ class SignIn: UIViewController {
     }
     
     @IBAction func login(_ sender: Any) {
-        self.performSegue(withIdentifier: "to_main_home", sender: self)
         
-        if emailAddress.text != "" && password.text != "" {
+        if self.emailAddress.text != "" && self.password.text != "" {
             Auth.auth().signIn(withEmail: emailAddress.text!, password: password.text!) { (user, error) in
                 if error != nil {
                     //error

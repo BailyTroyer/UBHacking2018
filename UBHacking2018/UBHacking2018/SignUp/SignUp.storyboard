@@ -543,7 +543,7 @@
                                     <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 </state>
                                 <connections>
-                                    <segue destination="9az-LV-ddp" kind="show" customClass="DismissSegue" customModule="UBHacking2018" customModuleProvider="target" id="Gsr-rk-OUf"/>
+                                    <segue destination="9az-LV-ddp" kind="show" id="WCm-Jx-lt3"/>
                                 </connections>
                             </button>
                         </subviews>
@@ -581,6 +581,6 @@
     <inferredMetricsTieBreakers>
         <segue reference="efF-cr-qVF"/>
         <segue reference="c6z-OG-nfv"/>
-        <segue reference="Gsr-rk-OUf"/>
+        <segue reference="WCm-Jx-lt3"/>
     </inferredMetricsTieBreakers>
 </document>
